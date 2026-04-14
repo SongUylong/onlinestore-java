@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Kill existing processes on the ports
-PORTS=(8761 8081 8181)
+PORTS=(8761 8081 8181 8180)
 for PORT in "${PORTS[@]}"; do
     PID=$(lsof -t -i:$PORT)
     if [ -n "$PID" ]; then
@@ -9,6 +9,11 @@ for PORT in "${PORTS[@]}"; do
         kill -9 $PID
     fi
 done
+
+# Restart Keycloak Docker container
+echo "Starting Keycloak..."
+docker rm -f keycloak 2>/dev/null
+docker run -d --name keycloak -p 8180:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:18.0.0 start-dev
 
 echo "Starting Discovery Server..."
 mvn spring-boot:run -pl discovery-server &

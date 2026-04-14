@@ -21,7 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClient;
 
     public void placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -35,13 +35,16 @@ public class OrderService {
 
         List<String> skuCodes = order.getOrderLineItemsList().stream().map(OrderLineItems::getSkuCode).toList();
 
-        InventoryResponse[] inventoryResponsesArray = webClient.get().uri("http://localhost:8083/api/inventory",
-                uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build()).retrieve()
+        InventoryResponse[] inventoryResponsesArray = webClient.build().get()
+                .uri("http://inventory-service/api/inventory",
+                        uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
+                .retrieve()
                 .bodyToMono(InventoryResponse[].class)
                 .block();
 
-        boolean allProductsInStock = inventoryResponsesArray.length == skuCodes.size() && Arrays.stream(inventoryResponsesArray)
-                .allMatch(InventoryResponse::isInStock);
+        boolean allProductsInStock = inventoryResponsesArray.length == skuCodes.size()
+                && Arrays.stream(inventoryResponsesArray)
+                        .allMatch(InventoryResponse::isInStock);
 
         if (allProductsInStock) {
             orderRepository.save(order);

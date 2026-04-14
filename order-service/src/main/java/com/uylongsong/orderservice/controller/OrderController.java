@@ -20,11 +20,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String placeOrder(@RequestBody OrderRequest orderRequest) {

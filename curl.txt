@@ -1,0 +1,7 @@
+TOKEN=$(curl -s -X POST http://localhost:8180/realms/spring-boot-microservices-realm/protocol/openid-connect/token \
+ -H "Content-Type: application/x-www-form-urlencoded" \
+ -d "grant_type=client_credentials" \
+ -d "client_id=spring-cloud-client" \
+ -d "client_secret=YbEGjbWOv5zRHWjjMVXgLDWEmxy9ypP4" \
+ -d "scope=openid" | jq -r .access_token) && \
+ curl -i -H "Authorization: Bearer $TOKEN" http://localhost:8181/api/product

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Kill existing processes on the ports
-PORTS=(8761 8081 8082 8083)
+PORTS=(8761 8081 8181)
 for PORT in "${PORTS[@]}"; do
     PID=$(lsof -t -i:$PORT)
     if [ -n "$PID" ]; then
@@ -13,8 +13,11 @@ done
 echo "Starting Discovery Server..."
 mvn spring-boot:run -pl discovery-server &
 
-# Wait for discovery server to start (simple sleep or check port)
+# Wait for discovery server to start
 sleep 15
+
+echo "Starting API Gateway..."
+mvn spring-boot:run -pl api-gateway &
 
 echo "Starting Product Service..."
 mvn spring-boot:run -pl product-service &

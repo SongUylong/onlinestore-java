@@ -1,4 +1,4 @@
-package com.uylongsong.notificationservice;
+package com.uylongsong.notificationservice.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
